@@ -18,12 +18,9 @@ class MostPopularTVShowsRepository{
          val data: MutableLiveData<TVShowResponse> = MutableLiveData()
         apiServ.getMostPopularTVShow(page).enqueue(object : Callback<TVShowResponse> {
             override fun onResponse(call: Call<TVShowResponse>, response: Response<TVShowResponse>) {
-                //Peticion nos responde de manera correcta
                 data.value = response.body()
             }
             override fun onFailure(call: Call<TVShowResponse>, t: Throwable) {
-                //si falla la peticion
-                //Toast.makeText( this,"error xdxd",Toast.LENGTH_SHORT).show()
                 data.value=null
             }
         })

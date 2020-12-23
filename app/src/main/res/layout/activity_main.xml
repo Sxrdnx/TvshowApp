@@ -59,6 +59,7 @@
                 app:tint="@color/colorTextIcons"
                 />
         </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tvShowRecycleView"
             android:layout_width="match_parent"
@@ -66,17 +67,19 @@
             android:clipToPadding="false"
             android:orientation="vertical"
             android:padding="@dimen/_4sdp"
-            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layoutHeader"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutHeader" />
+
         <ProgressBar
+            android:id="@+id/progressBar"
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:visibility="@{isLoading ? View.VISIBLE : View.GONE, default=gone}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layoutHeader"/>
+            app:layout_constraintTop_toBottomOf="@+id/layoutHeader" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
