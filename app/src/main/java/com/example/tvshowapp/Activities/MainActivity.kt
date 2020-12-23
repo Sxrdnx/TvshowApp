@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.tvshowapp.R
 import com.example.tvshowapp.adapters.TVShowsAdapter
 import com.example.tvshowapp.databinding.ActivityMainBinding
@@ -16,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MostPopularTVShowsViewModel
     private lateinit var activityMainBinding : ActivityMainBinding
     private  val tvShows= mutableListOf<TVShow>()
+    private var currentPage:Int=1
+    private var totalAvailablePages: Int=1
     private lateinit  var tvShowAdapter:TVShowsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,20 +31,41 @@ class MainActivity : AppCompatActivity() {
         viewModel= ViewModelProvider(this).get(MostPopularTVShowsViewModel::class.java)
         tvShowAdapter= TVShowsAdapter(tvShows)
         activityMainBinding.tvShowRecycleView.adapter=tvShowAdapter
+        activityMainBinding.tvShowRecycleView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!activityMainBinding.tvShowRecycleView.canScrollVertically(1)){
+                    if (currentPage <=totalAvailablePages){
+                        currentPage+=1
+                        getMostPopularTVShows()
+                    }
+                }
+            }
+        })
         getMostPopularTVShows()
-
     }
 
     private fun getMostPopularTVShows(){
-        activityMainBinding.isLoading=true
-        viewModel.getMostPopularTVShows(0).observe(this, { mostPopularTVShowsResponse ->
+        toggleLoading()
+        viewModel.getMostPopularTVShows(currentPage).observe(this, { mostPopularTVShowsResponse ->
+            toggleLoading()
                 activityMainBinding.isLoading=false
                 if (mostPopularTVShowsResponse != null){
+                    totalAvailablePages=mostPopularTVShowsResponse.totalPages
+                    val oldCount=tvShows.size
                     tvShows.addAll(mostPopularTVShowsResponse.tvShows)
-                     tvShowAdapter.notifyDataSetChanged()
+                    tvShowAdapter.notifyItemRangeInserted(oldCount,tvShows.size)
                 }else{
                     Toast.makeText(this,"ke pdo esta empty v:< ", Toast.LENGTH_SHORT).show()
                 }
-            })
+            }
+        )
+    }
+    private fun toggleLoading(){
+        if (currentPage ==1){
+            activityMainBinding.isLoading = activityMainBinding.isLoading != true
+        }else{
+            activityMainBinding.isLoadingMore=activityMainBinding.isLoadingMore !=true
+        }
     }
 }
