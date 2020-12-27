@@ -1,5 +1,6 @@
 package com.example.tvshowapp.Network
 
+import com.example.tvshowapp.responses.TVShowDetailsResponse
 import com.example.tvshowapp.responses.TVShowResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -10,4 +11,6 @@ import retrofit2.http.Path
 interface ApiService {
     @GET("most-popular")
     fun getMostPopularTVShow(@Query("page")page: Int): Call<TVShowResponse>
+    @GET("show-details")
+    fun getTVShowDetails(@Query("q") tvShowId: String): Call<TVShowDetailsResponse>
 }

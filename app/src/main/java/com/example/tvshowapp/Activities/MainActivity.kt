@@ -1,5 +1,6 @@
 package com.example.tvshowapp.Activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tvshowapp.R
 import com.example.tvshowapp.adapters.TVShowsAdapter
 import com.example.tvshowapp.databinding.ActivityMainBinding
+import com.example.tvshowapp.listeners.TVShowsListener
 import com.example.tvshowapp.models.TVShow
 import com.example.tvshowapp.viewmodels.MostPopularTVShowsViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TVShowsListener {
     private lateinit var viewModel: MostPopularTVShowsViewModel
     private lateinit var activityMainBinding : ActivityMainBinding
     private  val tvShows= mutableListOf<TVShow>()
@@ -23,13 +25,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityMainBinding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        activityMainBinding  = DataBindingUtil.setContentView(this,R.layout.activity_main)
         doInitialization()
     }
     private fun doInitialization(){
         activityMainBinding.tvShowRecycleView.setHasFixedSize(true)
         viewModel= ViewModelProvider(this).get(MostPopularTVShowsViewModel::class.java)
-        tvShowAdapter= TVShowsAdapter(tvShows)
+        tvShowAdapter= TVShowsAdapter(tvShows,this)
         activityMainBinding.tvShowRecycleView.adapter=tvShowAdapter
         activityMainBinding.tvShowRecycleView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -67,5 +69,16 @@ class MainActivity : AppCompatActivity() {
         }else{
             activityMainBinding.isLoadingMore=activityMainBinding.isLoadingMore !=true
         }
+    }
+
+    override fun onTVShowClicked(tvShow: TVShow) {
+        val intent =Intent(applicationContext,TVShowDetailsActivity::class.java)
+        intent.putExtra("id",tvShow.id)
+        intent.putExtra("name",tvShow.name)
+        intent.putExtra("startDate",tvShow.startDate)
+        intent.putExtra("country",tvShow.country)
+        intent.putExtra("network",tvShow.network)
+        intent.putExtra("status",tvShow.status)
+        startActivity(intent)
     }
 }
