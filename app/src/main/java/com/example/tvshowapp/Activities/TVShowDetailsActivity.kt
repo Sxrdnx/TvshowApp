@@ -1,5 +1,7 @@
 package com.example.tvshowapp.Activities
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -63,9 +65,16 @@ class TVShowDetailsActivity : AppCompatActivity() {
                )
                activityTVShowDetailsBinding.genre = tvShowDetailResponse.tvShowDetails.genres[0]
                activityTVShowDetailsBinding.runtime = tvShowDetailResponse.tvShowDetails.runtime +"   Min"
-               activityTVShowDetailsBinding.viewDivider1.visibility=View.VISIBLE
-               activityTVShowDetailsBinding.layoutMisc.visibility=View.VISIBLE
-               activityTVShowDetailsBinding.viewDivider2.visibility=View.VISIBLE
+               activityTVShowDetailsBinding.viewDivider1.visibility = View.VISIBLE
+               activityTVShowDetailsBinding.layoutMisc.visibility = View.VISIBLE
+               activityTVShowDetailsBinding.viewDivider2.visibility = View.VISIBLE
+               activityTVShowDetailsBinding.buttonWebsite.setOnClickListener{
+                   val intent = Intent(Intent.ACTION_VIEW)
+                   intent.data= Uri.parse(tvShowDetailResponse.tvShowDetails.url)
+                   startActivity(intent)
+               }
+               activityTVShowDetailsBinding.buttonWebsite.visibility = View.VISIBLE
+               activityTVShowDetailsBinding.buttonEpisodes.visibility = View.VISIBLE
                loadBasicTVShowDetails()
             }
         })

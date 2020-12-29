@@ -287,18 +287,55 @@
                         android:text="@{runtime}"
                         android:textColor="@color/colorTextIcons"
                         android:textSize="@dimen/_12sdp"/>
-                    <View
-                        android:id="@+id/viewDivider2"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="@dimen/_8sdp"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:layout_marginEnd="@dimen/_8sdp"
-                        android:background="@color/colorTextSecundary"
-                        android:visibility="gone"
-                        app:layout_constraintTop_toBottomOf="@id/layoutMisc" />
-
                 </LinearLayout>
+
+                <View
+                    android:id="@+id/viewDivider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:background="@color/colorTextSecundary"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/layoutMisc" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonWebsite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:fontFamily="@font/ubuntu_medium"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/_12ssp"
+                    android:text="@string/website"
+                    android:visibility="gone"
+                    android:backgroundTint="@color/colorAccent"
+                    app:cornerRadius="@dimen/_6sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonEpisodes"
+                    app:layout_constraintTop_toBottomOf="@+id/viewDivider2"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonEpisodes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:fontFamily="@font/ubuntu_medium"
+                    android:includeFontPadding="false"
+                    android:textSize="@dimen/_12ssp"
+                    android:text="@string/episodes"
+                    android:visibility="gone"
+                    android:textColor="#212121"
+                    android:backgroundTint="@color/colorTextOther"
+                    app:cornerRadius="@dimen/_6sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/buttonWebsite"
+                    app:layout_constraintTop_toBottomOf="@+id/viewDivider2"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
