@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TvShowApp</string>
     <string name="tv_shows_most_popular">TV shows | Most Popular</string>
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
+    <string name="u2022">•</string>
 </resources>

@@ -2,11 +2,13 @@ package com.example.tvshowapp.Activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
@@ -14,6 +16,7 @@ import com.example.tvshowapp.R
 import com.example.tvshowapp.adapters.ImageSliderAdapter
 import com.example.tvshowapp.databinding.ActivityTVShowDetailsBinding
 import com.example.tvshowapp.viewmodels.TVShowDetailsViewModel
+import java.util.*
 
 class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var activityTVShowDetailsBinding: ActivityTVShowDetailsBinding
@@ -26,16 +29,44 @@ class TVShowDetailsActivity : AppCompatActivity() {
 
     private fun doInitialization(){
         tvShowDetailViewModel= ViewModelProvider(this).get(TVShowDetailsViewModel::class.java)
-        getTVshowDetails()
+        activityTVShowDetailsBinding.imageBack.setOnClickListener { onBackPressed() }
+        getTVShowDetails()
     }
 
-    private fun getTVshowDetails(){
+    private fun getTVShowDetails(){
         activityTVShowDetailsBinding.isLoading=true
         val tvShowId:String = intent.getIntExtra("id",-1).toString()
         tvShowDetailViewModel.getTVShowDetails(tvShowId).observe(this,{tvShowDetailResponse->
             activityTVShowDetailsBinding.isLoading=false
            if (tvShowDetailResponse != null){
-                loadImageSlider(tvShowDetailResponse.tvShowDetails.pictures)
+               loadImageSlider(tvShowDetailResponse.tvShowDetails.pictures)
+               activityTVShowDetailsBinding.tvShowImageURL= tvShowDetailResponse.tvShowDetails.imagePath
+               activityTVShowDetailsBinding.imageTVShow.visibility =View.VISIBLE
+               activityTVShowDetailsBinding.description = HtmlCompat.fromHtml(tvShowDetailResponse.tvShowDetails.description,HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+               activityTVShowDetailsBinding.textDescription.visibility =View.VISIBLE
+               activityTVShowDetailsBinding.textReadMore.visibility = View.VISIBLE
+               activityTVShowDetailsBinding.textReadMore.setOnClickListener{
+                   if (activityTVShowDetailsBinding.textReadMore.text.toString() == ("Read More")){
+                       activityTVShowDetailsBinding.textDescription.maxLines = Integer.MAX_VALUE
+                       activityTVShowDetailsBinding.textDescription.ellipsize = null
+                       activityTVShowDetailsBinding.textReadMore.text = getString(R.string.read_less)
+                   }else{
+                       activityTVShowDetailsBinding.textDescription.maxLines = 4
+                       activityTVShowDetailsBinding.textDescription.ellipsize =TextUtils.TruncateAt.END
+                       activityTVShowDetailsBinding.textReadMore.text =getString(R.string.read_more)
+                   }
+               }
+               activityTVShowDetailsBinding.rating = String.format(
+                       Locale.getDefault(),
+                       "%.2f",
+                       tvShowDetailResponse.tvShowDetails.rating.toDoubleOrNull()
+               )
+               activityTVShowDetailsBinding.genre = tvShowDetailResponse.tvShowDetails.genres[0]
+               activityTVShowDetailsBinding.runtime = tvShowDetailResponse.tvShowDetails.runtime +"   Min"
+               activityTVShowDetailsBinding.viewDivider1.visibility=View.VISIBLE
+               activityTVShowDetailsBinding.layoutMisc.visibility=View.VISIBLE
+               activityTVShowDetailsBinding.viewDivider2.visibility=View.VISIBLE
+               loadBasicTVShowDetails()
             }
         })
     }
@@ -51,7 +82,6 @@ class TVShowDetailsActivity : AppCompatActivity() {
                 super.onPageSelected(position)
                 setCurrentSliderIndicator(position)
             }
-
         })
     }
 
@@ -70,6 +100,7 @@ class TVShowDetailsActivity : AppCompatActivity() {
         activityTVShowDetailsBinding.layoutSliderIndicators.visibility=View.VISIBLE
         setCurrentSliderIndicator(0)
     }
+
     private fun setCurrentSliderIndicator(position: Int){
         val childCount = activityTVShowDetailsBinding.layoutSliderIndicators.childCount
         for (i in 0 until childCount){
@@ -82,5 +113,17 @@ class TVShowDetailsActivity : AppCompatActivity() {
                         ContextCompat.getDrawable(applicationContext,R.drawable.background_slider_inidcator_inactive))
             }
         }
+    }
+
+    private fun loadBasicTVShowDetails(){
+        activityTVShowDetailsBinding.tvShowName = intent.getStringExtra("name ")
+        activityTVShowDetailsBinding.networkCountry = intent.getStringExtra("network") + "(" +
+                intent.getStringExtra("country") + ")"
+        activityTVShowDetailsBinding.status = intent.getStringExtra("status")
+        activityTVShowDetailsBinding.startedDate = intent.getStringExtra("startDate")
+        activityTVShowDetailsBinding.textName.visibility= View.VISIBLE
+        activityTVShowDetailsBinding.textNetworkCountry.visibility = View.VISIBLE
+        activityTVShowDetailsBinding.textStatus.visibility = View.VISIBLE
+        activityTVShowDetailsBinding.textStarted.visibility = View.VISIBLE
     }
 }
