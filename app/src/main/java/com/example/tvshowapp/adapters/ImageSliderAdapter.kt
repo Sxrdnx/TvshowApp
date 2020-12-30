@@ -18,7 +18,7 @@ class ImageSliderAdapter(private val sliderImages:List<String>): RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(sliderImages[position])
-    
+
     override fun getItemCount() = sliderImages.size          
 
     class ViewHolder(private val itemContainerSliderImageBinding: ItemContainerSliderImageBinding): RecyclerView.ViewHolder(itemContainerSliderImageBinding.root){
