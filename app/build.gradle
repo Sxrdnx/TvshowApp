@@ -58,10 +58,17 @@ dependencies {
     //Life cycle Extension
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
+    //noinspection LifecycleAnnotationProcessorWithJava8
+    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
+
     //Room & RX-Java suport
-    implementation 'androidx.room:room-runtime:2.2.5'
-    annotationProcessor 'androidx.room:room-compiler:2.2.5'
-    implementation 'androidx.room:room-rxjava2:2.2.5'
+    implementation 'androidx.room:room-runtime:2.2.6'
+    kapt "androidx.room:room-compiler:2.2.6"
+    annotationProcessor 'androidx.room:room-compiler:2.2.6'
+    implementation 'androidx.room:room-rxjava2:2.2.6'
+
+
+
 
     //RXjava
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'

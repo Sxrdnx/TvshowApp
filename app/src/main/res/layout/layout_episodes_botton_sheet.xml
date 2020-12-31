@@ -43,7 +43,6 @@
                 android:padding="@dimen/_2sdp"
                 android:src="@drawable/ic_close"
                 app:tint="@color/colorTextIcons"/>
-
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
