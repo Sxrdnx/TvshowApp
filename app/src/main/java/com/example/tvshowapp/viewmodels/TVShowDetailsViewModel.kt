@@ -10,7 +10,9 @@ import com.example.tvshowapp.models.TVShow
 import com.example.tvshowapp.repositories.TVShowDetailsRepository
 import com.example.tvshowapp.responses.TVShowDetailsResponse
 import io.reactivex.Completable
-
+/*Nota: modificar la funcion de getTVShowDataBase a una kotlin androidExtencion o buscar la forma
+* para que este simplemente en la misma clase Abstracta
+* buscar en el episodio 9 apartir del minuto 4 */
 class TVShowDetailsViewModel(application: Application): AndroidViewModel(application) {
     private val tvShowDetailsRepository: TVShowDetailsRepository= TVShowDetailsRepository()
     private val tvShowsDatabase: TVShowsDatabase by lazy { getTVShowDatabase(application) }
