@@ -14,6 +14,7 @@ interface TVShowDao {
     fun addToWatchlist(tvShow :TVShow):Completable
 
     @Delete
-    fun removeFromWatchlist(tvShow: TVShow)
-    
+    fun removeFromWatchlist(tvShow: TVShow) :Completable
+    @Query( "SELECT * FROM  tvshows WHERE id= :tvShowId")
+    fun getTVShowFromWatchlist( tvShowId: String) : Flowable<TVShow>
 }

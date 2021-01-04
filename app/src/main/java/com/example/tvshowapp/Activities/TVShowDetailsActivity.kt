@@ -24,8 +24,8 @@ import com.example.tvshowapp.adapters.ImageSliderAdapter
 import com.example.tvshowapp.databinding.ActivityTVShowDetailsBinding
 import com.example.tvshowapp.databinding.LayoutEpisodesBottonSheetBinding
 import com.example.tvshowapp.models.TVShow
+import com.example.tvshowapp.utilities.TempDataHolder
 import com.example.tvshowapp.viewmodels.TVShowDetailsViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -38,23 +38,37 @@ class TVShowDetailsActivity : AppCompatActivity() {
     private lateinit var episodeBottomSheetDialog: BottomSheetDialog
     private lateinit var layoutEpisodesBottonSheetBinding: LayoutEpisodesBottonSheetBinding
     private lateinit var tvShow: TVShow
+    private var isTVShowAvailableInWatchlist: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         activityTVShowDetailsBinding = DataBindingUtil.setContentView(this,R.layout.activity_t_v_show_details)
+        activityTVShowDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_t_v_show_details)
         doInitialization()
     }
 
-    private fun doInitialization(){
-        tvShowDetailViewModel= ViewModelProvider(this).get(TVShowDetailsViewModel::class.java)
+    private fun doInitialization() {
+        tvShowDetailViewModel = ViewModelProvider(this).get(TVShowDetailsViewModel::class.java)
         activityTVShowDetailsBinding.imageBack.setOnClickListener { onBackPressed() }
         tvShow = intent.getSerializableExtra("tvShow") as TVShow
+        checkTVShowInWatchlist()
         getTVShowDetails()
     }
 
-    private fun getTVShowDetails(){
-        activityTVShowDetailsBinding.isLoading=true
-        val tvShowId:String = tvShow.id.toString()
+    private fun checkTVShowInWatchlist() {
+        val compositeDisposable = CompositeDisposable()
+        compositeDisposable.add(tvShowDetailViewModel.getTVShowFromWatchlist(tvShow.id.toString())
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    isTVShowAvailableInWatchlist = true
+                    activityTVShowDetailsBinding.imageWatchlist.setImageResource(R.drawable.ic_added)
+                    compositeDisposable.dispose()
+                })
+    }
+
+    private fun getTVShowDetails() {
+        activityTVShowDetailsBinding.isLoading = true
+        val tvShowId: String = tvShow.id.toString()
         tvShowDetailViewModel.getTVShowDetails(tvShowId).observe(this, { tvShowDetailResponse ->
             activityTVShowDetailsBinding.isLoading = false
             if (tvShowDetailResponse != null) {
@@ -111,28 +125,45 @@ class TVShowDetailsActivity : AppCompatActivity() {
                     episodeBottomSheetDialog.show()
                 }
                 activityTVShowDetailsBinding.imageWatchlist.setOnClickListener {
-                    CompositeDisposable().add(tvShowDetailViewModel.addToWatchlist(tvShow)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe {
-                                activityTVShowDetailsBinding.imageWatchlist.setImageResource(R.drawable.ic_added)
-                                Toast.makeText(applicationContext, "Added to watchlist ", Toast.LENGTH_SHORT).show()
-                            }
-                    )
+                    val compositeDisposable = CompositeDisposable()
+                    if (isTVShowAvailableInWatchlist) {
+                        compositeDisposable.add(tvShowDetailViewModel.removeTVShowFromWatchlist(tvShow)
+                                .subscribeOn(Schedulers.computation())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe {
+                                    isTVShowAvailableInWatchlist = false
+                                    TempDataHolder.IS_WATCHTLIST_UPDATE= true
+                                    activityTVShowDetailsBinding.imageWatchlist.setImageResource(R.drawable.ic_watchlist)
+                                    Toast.makeText(applicationContext, "Remove from watchlist", Toast.LENGTH_SHORT).show()
+                                    compositeDisposable.dispose()
+                                }
+                        )
+                    } else {
+                        compositeDisposable.add(tvShowDetailViewModel.addToWatchlist(tvShow)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe {
+                                    TempDataHolder.IS_WATCHTLIST_UPDATE =true
+                                    activityTVShowDetailsBinding.imageWatchlist.setImageResource(R.drawable.ic_added)
+                                    Toast.makeText(applicationContext, "Added to watchlist ", Toast.LENGTH_SHORT).show()
+                                    compositeDisposable.dispose()
+                                }
+                        )
+                    }
                 }
-                activityTVShowDetailsBinding.imageWatchlist.visibility=View.VISIBLE
+                activityTVShowDetailsBinding.imageWatchlist.visibility = View.VISIBLE
                 loadBasicTVShowDetails()
             }
         })
     }
 
-    private fun loadImageSlider(sliderImages: List<String>){
-        activityTVShowDetailsBinding.sliderViewPager.offscreenPageLimit=1
-        activityTVShowDetailsBinding.sliderViewPager.adapter=ImageSliderAdapter(sliderImages)
-        activityTVShowDetailsBinding.sliderViewPager.visibility= View.VISIBLE
-        activityTVShowDetailsBinding.viewFadingEdge.visibility=View.VISIBLE
+    private fun loadImageSlider(sliderImages: List<String>) {
+        activityTVShowDetailsBinding.sliderViewPager.offscreenPageLimit = 1
+        activityTVShowDetailsBinding.sliderViewPager.adapter = ImageSliderAdapter(sliderImages)
+        activityTVShowDetailsBinding.sliderViewPager.visibility = View.VISIBLE
+        activityTVShowDetailsBinding.viewFadingEdge.visibility = View.VISIBLE
         setupSliderIndicators(sliderImages.size)
-        activityTVShowDetailsBinding.sliderViewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+        activityTVShowDetailsBinding.sliderViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 setCurrentSliderIndicator(position)
@@ -140,37 +171,37 @@ class TVShowDetailsActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupSliderIndicators(count :Int){
+    private fun setupSliderIndicators(count: Int) {
         val indicators = arrayOfNulls<ImageView>(count)
-        val layoutParams= LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-        layoutParams.setMargins(8,0,8,0)
-        for (i in indicators.indices){
-            indicators[i]=ImageView(applicationContext)
+        val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        layoutParams.setMargins(8, 0, 8, 0)
+        for (i in indicators.indices) {
+            indicators[i] = ImageView(applicationContext)
             indicators[i]!!.setImageDrawable(ContextCompat.getDrawable(
                     applicationContext,
                     R.drawable.background_slider_inidcator_inactive))
-            indicators[i]!!.layoutParams=layoutParams
+            indicators[i]!!.layoutParams = layoutParams
             activityTVShowDetailsBinding.layoutSliderIndicators.addView(indicators[i])
         }
-        activityTVShowDetailsBinding.layoutSliderIndicators.visibility=View.VISIBLE
+        activityTVShowDetailsBinding.layoutSliderIndicators.visibility = View.VISIBLE
         setCurrentSliderIndicator(0)
     }
 
-    private fun setCurrentSliderIndicator(position: Int){
+    private fun setCurrentSliderIndicator(position: Int) {
         val childCount = activityTVShowDetailsBinding.layoutSliderIndicators.childCount
-        for (i in 0 until childCount){
+        for (i in 0 until childCount) {
             val imageView: ImageView = activityTVShowDetailsBinding.layoutSliderIndicators.getChildAt(i) as ImageView
-            if (i== position){
+            if (i == position) {
                 imageView.setImageDrawable(
-                        ContextCompat.getDrawable(applicationContext,R.drawable.background_slider_indicator_active))
-            }else{
+                        ContextCompat.getDrawable(applicationContext, R.drawable.background_slider_indicator_active))
+            } else {
                 imageView.setImageDrawable(
-                        ContextCompat.getDrawable(applicationContext,R.drawable.background_slider_inidcator_inactive))
+                        ContextCompat.getDrawable(applicationContext, R.drawable.background_slider_inidcator_inactive))
             }
         }
     }
 
-    private fun loadBasicTVShowDetails(){
+    private fun loadBasicTVShowDetails() {
         activityTVShowDetailsBinding.tvShowName = tvShow.name
         activityTVShowDetailsBinding.networkCountry = tvShow.network + "(" +
                 tvShow.country + ")"
