@@ -48,6 +48,10 @@ class MainActivity : AppCompatActivity(), TVShowsListener {
             startActivity(Intent(applicationContext,WatchlistActivity::class.java))
         }
 
+        activityMainBinding.imageSearch.setOnClickListener{
+            startActivity(Intent(applicationContext, SearchActivity::class.java))
+        }
+
         getMostPopularTVShows()
     }
 
@@ -67,6 +71,7 @@ class MainActivity : AppCompatActivity(), TVShowsListener {
             }
         )
     }
+
     private fun toggleLoading(){
         if (currentPage ==1){
             activityMainBinding.isLoading = activityMainBinding.isLoading != true
