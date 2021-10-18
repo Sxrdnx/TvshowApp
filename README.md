@@ -9,4 +9,5 @@ Also you can :
 * go to website of tvshow
 
 ### Phone display:
-
+<img src="./screenshots/1.jpg" width="30%" height="30%">&ensp;<img src="./screenshots/2.jpg" width="30%" height="30%">
+<img src="./screenshots/4.jpg" width="30%" height="30%">
