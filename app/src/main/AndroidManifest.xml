@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.tvshowapp">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -11,11 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TvShowApp"
         android:usesCleartextTraffic="true"
-        tools:targetApi="m">
-        <activity android:name=".Activities.SearchActivity"></activity>
-        <activity android:name=".Activities.WatchlistActivity" />
-        <activity android:name=".Activities.TVShowDetailsActivity" />
-        <activity android:name=".Activities.MainActivity">
+        >
+        <activity
+            android:name=".Activities.SearchActivity"
+            android:exported="false" />
+
+        <activity android:name=".Activities.WatchlistActivity"
+            android:exported="false"/>
+
+        <activity android:name=".Activities.TVShowDetailsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".Activities.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,6 +33,6 @@
         </activity>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
+
 
 </manifest>
